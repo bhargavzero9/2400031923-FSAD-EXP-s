@@ -1,0 +1,64 @@
+package com.example.demo.controller;
+
+import com.example.demo.model.Course;
+import com.example.demo.service.CourseService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/courses")
+public class CourseController {
+
+    private final CourseService service;
+
+    public CourseController(CourseService service) {
+        this.service = service;
+    }
+
+    // CREATE
+    @PostMapping
+    public ResponseEntity<Course> addCourse(@RequestBody Course course) {
+        return ResponseEntity.status(201).body(service.addCourse(course));
+    }
+
+    // READ ALL
+    @GetMapping
+    public ResponseEntity<List<Course>> getAllCourses() {
+        return ResponseEntity.ok(service.getAllCourses());
+    }
+
+    // READ BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCourse(@PathVariable int id) {
+        Course c = service.getCourseById(id);
+        if (c == null)
+            return ResponseEntity.status(404).body("Course not found");
+        return ResponseEntity.ok(c);
+    }
+
+    // UPDATE
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCourse(@PathVariable int id, @RequestBody Course course) {
+        Course updated = service.updateCourse(id, course);
+        if (updated == null)
+            return ResponseEntity.status(404).body("Course not found");
+        return ResponseEntity.ok(updated);
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCourse(@PathVariable int id) {
+        boolean deleted = service.deleteCourse(id);
+        if (!deleted)
+            return ResponseEntity.status(404).body("Course not found");
+        return ResponseEntity.ok("Course deleted");
+    }
+
+    // SEARCH
+    @GetMapping("/search/{title}")
+    public ResponseEntity<List<Course>> search(@PathVariable String title) {
+        return ResponseEntity.ok(service.searchByTitle(title));
+    }
+}

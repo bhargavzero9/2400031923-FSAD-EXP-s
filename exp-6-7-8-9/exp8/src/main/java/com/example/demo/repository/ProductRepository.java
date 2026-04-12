@@ -1,0 +1,20 @@
+package com.example.demo.repository;
+
+import com.example.demo.model.Product;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface ProductRepository extends JpaRepository<Product, Integer> {
+
+    List<Product> findByCategory(String category);
+
+    List<Product> findByPriceBetween(double min, double max);
+
+    @Query("SELECT p FROM Product p ORDER BY p.price ASC")
+    List<Product> sortByPrice();
+
+    @Query("SELECT p FROM Product p WHERE p.price > :price")
+    List<Product> expensiveProducts(@Param("price") double price);
+}
